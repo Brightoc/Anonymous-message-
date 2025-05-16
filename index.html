@@ -3,179 +3,467 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NGL Clone (Anonymous Messages)</title>
-  <link rel="stylesheet" href="style.css">
+  <title>NGL Pro Clone</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #FF3E6C;
+      --secondary: #9147FF;
+      --text: #1A1A1A;
+      --text-light: #6B6B6B;
+      --bg: #FFFFFF;
+      --card-bg: #F8F8F8;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+      --transition: all 0.2s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
     body {
-  font-family: 'Arial', sans-serif;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-  background: #f5f5f5;
-}
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-.screen {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+    .container {
+      max-width: 500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-.hidden {
-  display: none;
-}
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
 
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
+    .logo {
+      font-weight: 700;
+      font-size: 24px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
 
-button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
+    .screen {
+      background: var(--bg);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-button:hover {
-  background: #0056b3;
-}
+    .hidden {
+      display: none !important;
+    }
 
-#messages {
-  margin-top: 20px;
-  text-align: left;
-}
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      margin-bottom: 24px;
+    }
 
-#messages div {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--text-light);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .input-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #E0E0E0;
+      border-radius: var(--radius);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #E0E0E0;
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+    }
+
+    .message-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: var(--radius);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .message-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-light);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .link-display {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: var(--radius);
+      margin: 16px 0;
+      word-break: break-all;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    .empty-state .material-icons {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: #E0E0E0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px;
+      }
+      
+      .card {
+        padding: 24px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Create Link Screen -->
-  <div id="create-link" class="screen">
-    <h1>Create Your Anonymous Link</h1>
-    <input type="text" id="username" placeholder="Your username" required />
-    <button id="generate-btn">Generate Link</button>
-  </div>
+  <div class="container">
+    <header>
+      <div class="logo">NGL Pro</div>
+      <button id="theme-toggle" class="btn-outline">
+        <span class="material-icons">dark_mode</span>
+      </button>
+    </header>
 
-  <!-- Send Message Screen (for visitors) -->
-  <div id="send-container" class="screen hidden">
-    <h2>Send an anonymous message to <span id="target-user"></span></h2>
-    <textarea id="message-text" placeholder="Your message..."></textarea>
-    <button id="send-btn">Send Anonymously</button>
-  </div>
+    <!-- Create Link Screen -->
+    <div id="create-screen" class="screen">
+      <div class="card">
+        <h1>Create Your Link</h1>
+        <p>Get started by creating your personal link to receive anonymous messages.</p>
+        
+        <div class="input-group">
+          <input type="text" id="username-input" placeholder="Enter your username" required>
+        </div>
+        
+        <button id="create-btn" class="btn">
+          <span class="material-icons">link</span>
+          Generate Link
+        </button>
+      </div>
+    </div>
 
-  <!-- Inbox Screen (for owner) -->
-  <div id="inbox-container" class="screen hidden">
-    <h2>Your Messages</h2>
-    <div id="messages"></div>
-    <button id="clear-btn">Clear All</button>
+    <!-- Link Created Screen -->
+    <div id="link-screen" class="screen hidden">
+      <div class="card">
+        <h1>Your Link is Ready!</h1>
+        <p>Share this link to receive anonymous messages:</p>
+        
+        <div class="link-display">
+          <span id="generated-link"></span>
+          <button id="copy-btn" class="copy-btn">
+            <span class="material-icons">content_copy</span>
+          </button>
+        </div>
+        
+        <button id="view-inbox-btn" class="btn">
+          <span class="material-icons">inbox</span>
+          View Inbox
+        </button>
+      </div>
+    </div>
+
+    <!-- Send Message Screen -->
+    <div id="send-screen" class="screen hidden">
+      <div class="card">
+        <h1>Send Anonymously</h1>
+        <p>Your message will be sent to <strong id="target-username"></strong> without revealing your identity.</p>
+        
+        <div class="input-group">
+          <textarea id="message-input" placeholder="Type your message here..."></textarea>
+        </div>
+        
+        <button id="send-btn" class="btn">
+          <span class="material-icons">send</span>
+          Send Message
+        </button>
+      </div>
+    </div>
+
+    <!-- Inbox Screen -->
+    <div id="inbox-screen" class="screen hidden">
+      <div class="card">
+        <h1>Your Inbox</h1>
+        <p>Messages you've received will appear here.</p>
+      </div>
+      
+      <div class="message-list" id="message-list">
+        <!-- Messages will appear here -->
+      </div>
+      
+      <button id="new-link-btn" class="btn-outline">
+        <span class="material-icons">add</span>
+        Create New Link
+      </button>
+    </div>
   </div>
 
   <script>
     // DOM Elements
-const createLinkScreen = document.getElementById("create-link");
-const sendContainer = document.getElementById("send-container");
-const inboxContainer = document.getElementById("inbox-container");
-const usernameInput = document.getElementById("username");
-const generateBtn = document.getElementById("generate-btn");
-const sendBtn = document.getElementById("send-btn");
-const clearBtn = document.getElementById("clear-btn");
-const targetUserSpan = document.getElementById("target-user");
-const messageText = document.getElementById("message-text");
-const messagesDiv = document.getElementById("messages");
+    const themeToggle = document.getElementById('theme-toggle');
+    const usernameInput = document.getElementById('username-input');
+    const createBtn = document.getElementById('create-btn');
+    const generatedLink = document.getElementById('generated-link');
+    const copyBtn = document.getElementById('copy-btn');
+    const viewInboxBtn = document.getElementById('view-inbox-btn');
+    const targetUsername = document.getElementById('target-username');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const messageList = document.getElementById('message-list');
+    const newLinkBtn = document.getElementById('new-link-btn');
+    
+    const screens = {
+      create: document.getElementById('create-screen'),
+      link: document.getElementById('link-screen'),
+      send: document.getElementById('send-screen'),
+      inbox: document.getElementById('inbox-screen')
+    };
 
-// Check URL hash (e.g., `#username`)
-const hash = window.location.hash.substring(1);
+    // Check URL for username hash
+    const urlHash = window.location.hash.substring(1);
+    const isOwner = localStorage.getItem('ngl-owner') === urlHash;
 
-// Initialize UI based on URL
-if (hash) {
-  // If URL has a username (e.g., `#alice`)
-  showInboxOrSendScreen(hash);
-} else {
-  // Show link creation screen
-  createLinkScreen.classList.remove("hidden");
-}
+    // Initialize
+    if (urlHash) {
+      if (isOwner) {
+        showScreen('inbox');
+        loadMessages(urlHash);
+      } else {
+        showScreen('send');
+        targetUsername.textContent = urlHash;
+      }
+    } else {
+      showScreen('create');
+    }
 
-// Generate a personal link
-generateBtn.addEventListener("click", () => {
-  const username = usernameInput.value.trim();
-  if (!username) return alert("Please enter a username!");
+    // Theme Toggle
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      themeToggle.innerHTML = isDark 
+        ? '<span class="material-icons">light_mode</span>' 
+        : '<span class="material-icons">dark_mode</span>';
+      
+      // Update CSS variables for dark mode
+      if (isDark) {
+        document.documentElement.style.setProperty('--bg', '#121212');
+        document.documentElement.style.setProperty('--card-bg', '#1E1E1E');
+        document.documentElement.style.setProperty('--text', '#FFFFFF');
+        document.documentElement.style.setProperty('--text-light', '#B0B0B0');
+      } else {
+        document.documentElement.style.setProperty('--bg', '#FFFFFF');
+        document.documentElement.style.setProperty('--card-bg', '#F8F8F8');
+        document.documentElement.style.setProperty('--text', '#1A1A1A');
+        document.documentElement.style.setProperty('--text-light', '#6B6B6B');
+      }
+    });
 
-  const link = `${window.location.origin}${window.location.pathname}#${username}`;
-  alert(`Your NGL link:\n${link}\n\nShare this to receive anonymous messages!`);
-  showInboxOrSendScreen(username);
-});
+    // Create Link
+    createBtn.addEventListener('click', () => {
+      const username = usernameInput.value.trim();
+      if (!username) return;
+      
+      const link = `${window.location.origin}${window.location.pathname}#${username}`;
+      generatedLink.textContent = link;
+      localStorage.setItem('ngl-owner', username);
+      showScreen('link');
+    });
 
-// Send an anonymous message
-sendBtn.addEventListener("click", () => {
-  const message = messageText.value.trim();
-  if (!message) return alert("Message cannot be empty!");
+    // Copy Link
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(generatedLink.textContent);
+      copyBtn.innerHTML = '<span class="material-icons">check</span> Copied!';
+      setTimeout(() => {
+        copyBtn.innerHTML = '<span class="material-icons">content_copy</span>';
+      }, 2000);
+    });
 
-  const targetUser = window.location.hash.substring(1);
-  saveMessage(targetUser, message);
-  messageText.value = "";
-  alert("Message sent anonymously! 🎉");
-});
+    // View Inbox
+    viewInboxBtn.addEventListener('click', () => {
+      const username = localStorage.getItem('ngl-owner');
+      window.location.hash = username;
+      showScreen('inbox');
+      loadMessages(username);
+    });
 
-// Clear all messages
-clearBtn.addEventListener("click", () => {
-  const targetUser = window.location.hash.substring(1);
-  localStorage.removeItem(`ngl_${targetUser}`);
-  loadMessages(targetUser);
-});
+    // Send Message
+    sendBtn.addEventListener('click', () => {
+      const message = messageInput.value.trim();
+      if (!message) return;
+      
+      const username = window.location.hash.substring(1);
+      saveMessage(username, message);
+      messageInput.value = '';
+      
+      // Show confirmation
+      sendBtn.innerHTML = '<span class="material-icons">check</span> Sent!';
+      setTimeout(() => {
+        sendBtn.innerHTML = '<span class="material-icons">send</span> Send Message';
+      }, 2000);
+    });
 
-// Helper: Show inbox (for owner) or send screen (for visitors)
-function showInboxOrSendScreen(username) {
-  createLinkScreen.classList.add("hidden");
+    // New Link
+    newLinkBtn.addEventListener('click', () => {
+      localStorage.removeItem('ngl-owner');
+      window.location.hash = '';
+      window.location.reload();
+    });
 
-  // If the visitor is the link owner, show inbox
-  if (prompt("Are you the owner of this link? Enter 'yes' to view messages") === "yes") {
-    inboxContainer.classList.remove("hidden");
-    loadMessages(username);
-  } else {
-    // Else, show send screen
-    sendContainer.classList.remove("hidden");
-    targetUserSpan.textContent = username;
-  }
-}
+    // Helper Functions
+    function showScreen(screenName) {
+      Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+      screens[screenName].classList.remove('hidden');
+    }
 
-// Save message to localStorage
-function saveMessage(username, text) {
-  const key = `ngl_${username}`;
-  const messages = JSON.parse(localStorage.getItem(key)) || [];
-  messages.push({
-    text,
-    timestamp: new Date().toISOString(),
-  });
-  localStorage.setItem(key, JSON.stringify(messages));
-}
+    function saveMessage(username, message) {
+      const messages = JSON.parse(localStorage.getItem(`ngl-${username}`)) || [];
+      messages.push({
+        text: message,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem(`ngl-${username}`, JSON.stringify(messages));
+    }
 
-// Load messages for a user
-function loadMessages(username) {
-  const key = `ngl_${username}`;
-  const messages = JSON.parse(localStorage.getItem(key)) || [];
-
-  if (messages.length === 0) {
-    messagesDiv.innerHTML = "<p>No messages yet. Share your link!</p>";
-  } else {
-    messagesDiv.innerHTML = messages.map(msg => `
-      <div>
-        <strong>Anonymous:</strong> ${msg.text} 
-        <small>(${new Date(msg.timestamp).toLocaleString()})</small>
-      </div>
-    `).join("");
-  }
-}
+    function loadMessages(username) {
+      const messages = JSON.parse(localStorage.getItem(`ngl-${username}`)) || [];
+      messageList.innerHTML = '';
+      
+      if (messages.length === 0) {
+        messageList.innerHTML = `
+          <div class="empty-state">
+            <span class="material-icons">inbox</span>
+            <h3>No messages yet</h3>
+            <p>Share your link to start receiving messages</p>
+          </div>
+        `;
+        return;
+      }
+      
+      messages.forEach(msg => {
+        const messageEl = document.createElement('div');
+        messageEl.className = 'message';
+        messageEl.innerHTML = `
+          <div>${msg.text}</div>
+          <div class="message-meta">
+            <span>Anonymous</span>
+            <span>${new Date(msg.timestamp).toLocaleString()}</span>
+          </div>
+        `;
+        messageList.appendChild(messageEl);
+      });
+    }
   </script>
 </body>
-</html>
+          </html>
