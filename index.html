@@ -249,7 +249,12 @@
       const link = `${window.location.origin}${window.location.pathname}#${username}`;
       generatedLink.textContent = link;
       localStorage.setItem('sd-owner', username);
-      localStorage.setItem(`sd-messages-${username}`, JSON.stringify([])); // Initialize empty messages
+      
+      // Initialize empty messages array if it doesn't exist
+      if (!localStorage.getItem(`sd-messages-${username}`)) {
+        localStorage.setItem(`sd-messages-${username}`, JSON.stringify([]));
+      }
+      
       showScreen('link');
     });
 
@@ -278,10 +283,14 @@
       
       const username = window.location.hash.substring(1);
       const messages = JSON.parse(localStorage.getItem(`sd-messages-${username}`)) || [];
+      
+      // Add new message
       messages.push({
         text: message,
         timestamp: new Date().toISOString()
       });
+      
+      // Save updated messages
       localStorage.setItem(`sd-messages-${username}`, JSON.stringify(messages));
       messageInput.value = '';
       
@@ -336,9 +345,12 @@
 
     // Periodically check for new messages
     function startMessagePolling(username) {
+      // Clear any existing polling
+      if (window.messagePoll) clearInterval(window.messagePoll);
+      
       let lastCount = JSON.parse(localStorage.getItem(`sd-messages-${username}`))?.length || 0;
       
-      const poll = setInterval(() => {
+      window.messagePoll = setInterval(() => {
         const currentMessages = JSON.parse(localStorage.getItem(`sd-messages-${username}`)) || [];
         if (currentMessages.length > lastCount) {
           loadMessages(username);
@@ -351,19 +363,7 @@
             });
           }
         }
-        
-        // Stop polling if user leaves inbox
-        if (!document.getElementById('inbox-screen').classList.contains('active')) {
-          clearInterval(poll);
-        }
       }, 1000);
-      
-      // Restart polling when returning to inbox
-      document.addEventListener('visibilitychange', () => {
-        if (document.getElementById('inbox-screen').classList.contains('active')) {
-          startMessagePolling(username);
-        }
-      });
     }
 
     // Request notification permission
@@ -372,4 +372,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
