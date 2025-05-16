@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecretDrop | Anonymous Cyber Messaging</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --primary-glow: rgba(0, 240, 255, 0.4);
+            --secondary: #7b2dff;
+            --text: #e0e0e0;
+            --text-dark: #1a1a1a;
+            --bg: #0d0d17;
+            --card: #151522;
+            --card-border: rgba(123, 45, 255, 0.3);
+            --error: #ff3860;
+            --success: #2de2a3;
+            --success-glow: rgba(45, 226, 163, 0.4);
+            --radius: 8px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(123, 45, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 240, 255, 0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cyber-border {
+            position: relative;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: 0 0 15px var(--primary-glow);
+            overflow: hidden;
+        }
+
+        .cyber-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 200% 200%;
+            border-radius: var(--radius);
+            animation: gradientShift 6s ease infinite;
+            opacity: 0.7;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px var(--primary-glow);
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 25%;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 10px var(--primary-glow);
+            color: white;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn i {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .btn-danger {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 56, 96, 0.1);
+            box-shadow: 0 0 10px rgba(255, 56, 96, 0.4);
+            color: white;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(10, 10, 20, 0.8);
+            border: 1px solid rgba(123, 45, 255, 0.3);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            background: rgba(10, 10, 20, 0.9);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .error {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: var(--radius);
+            background: rgba(20, 20, 35, 0.7);
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary);
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        .message::before {
+            content: '>';
+            position: absolute;
+            left: 5px;
+            top: 15px;
+            color: var(--primary);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .message-content {
+            padding-left: 15px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #7a7a8c;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7a7a8c;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: rgba(123, 45, 255, 0.3);
+        }
+
+        .empty-state p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .flex {
+            display: flex;
+            gap: 10px;
+        }
+
+        .flex-grow {
+            flex-grow: 1;
+        }
+
+        .copy-link {
+            display: flex;
+            margin-top: 15px;
+        }
+
+        .copy-link input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+
+        .copy-link .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            padding: 0 15px;
+            min-width: 45px;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(123, 45, 255, 0.3);
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: #7a7a8c;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            border-left: 3px solid var(--primary);
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--error);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        .terminal-effect {
+            position: relative;
+        }
+
+        .terminal-effect::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tabs {
+                justify-content: space-between;
+            }
+            
+            .tab-btn {
+                padding: 10px 5px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="material-icons" style="vertical-align: middle; font-size: 2rem;">lock</span>SecretDrop</h1>
+        
+        <div class="tabs">
+            <div class="tab-btn active" data-tab="create">Create Link</div>
+            <div class="tab-btn" data-tab="inbox">Inbox</div>
+            <div class="tab-btn" data-tab="send">Send Message</div>
+        </div>
+        
+        <!-- Create Link Tab -->
+        <div class="tab active" id="create-tab">
+            <div class="card cyber-border">
+                <div class="input-group">
+                    <label for="username">USERNAME</label>
+                    <input type="text" id="username" placeholder="your_cyber_handle" maxlength="20" class="terminal-effect">
+                    <div class="error" id="username-error">Invalid format (3-20 chars: a-z, 0-9, _-)</div>
+                </div>
+                <button class="btn btn-primary" id="create-btn">
+                    <i class="material-icons">vpn_key</i> Generate Link
+                </button>
+                
+                <div id="link-container" style="display: none;">
+                    <div class="copy-link">
+                        <input type="text" id="generated-link" readonly>
+                        <button class="btn" id="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.8rem; color: #7a7a8c;">
+                        Share this encrypted link to receive anonymous transmissions
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Inbox Tab -->
+        <div class="tab" id="inbox-tab">
+            <div class="card cyber-border">
+                <div id="inbox-header" style="display: none; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--primary);">INCOMING TRANSMISSIONS</h2>
+                        <button class="btn btn-danger" id="clear-btn">
+                            <i class="material-icons">delete_forever</i> Purge
+                        </button>
+                    </div>
+                </div>
+                <div id="inbox-messages"></div>
+                <div class="empty-state" id="inbox-empty">
+                    <i class="material-icons">dns</i>
+                    <h3 style="font-family: 'Orbitron', sans-serif; color: #7a7a8c; margin-bottom: 5px;">NO MESSAGES DETECTED</h3>
+                    <p>Your drop zone is secure and awaiting transmissions</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send Message Tab -->
+        <div class="tab" id="send-tab">
+            <div class="card cyber-border">
+                <div class="input-group">
+                    <label for="recipient-username">TARGET IDENTIFIER</label>
+                    <input type="text" id="recipient-username" placeholder="recipient_handle" class="terminal-effect">
+                    <div class="error" id="recipient-error">Invalid recipient identifier</div>
+                </div>
+                <div class="input-group">
+                    <label for="message">ENCRYPTED MESSAGE</label>
+                    <textarea id="message" placeholder="Enter your anonymous transmission..."></textarea>
+                    <div class="error" id="message-error">Message must be 1-1000 characters</div>
+                </div>
+                <button class="btn btn-primary" id="send-btn">
+                    <i class="material-icons">send</i> Transmit
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <div id="notification-message"></div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const createTab = document.getElementById('create-tab');
+        const inboxTab = document.getElementById('inbox-tab');
+        const sendTab = document.getElementById('send-tab');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const usernameInput = document.getElementById('username');
+        const usernameError = document.getElementById('username-error');
+        const createBtn = document.getElementById('create-btn');
+        const linkContainer = document.getElementById('link-container');
+        const generatedLink = document.getElementById('generated-link');
+        const copyBtn = document.getElementById('copy-btn');
+        const inboxMessages = document.getElementById('inbox-messages');
+        const inboxEmpty = document.getElementById('inbox-empty');
+        const inboxHeader = document.getElementById('inbox-header');
+        const clearBtn = document.getElementById('clear-btn');
+        const recipientInput = document.getElementById('recipient-username');
+        const recipientError = document.getElementById('recipient-error');
+        const messageInput = document.getElementById('message');
+        const messageError = document.getElementById('message-error');
+        const sendBtn = document.getElementById('send-btn');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        // App State
+        let currentUsername = '';
+        let messagePollingInterval;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we're viewing someone's inbox
+            const hash = window.location.hash.substring(1);
+            
+            if (hash) {
+                // If hash exists, show send message tab
+                showTab('send');
+                recipientInput.value = hash;
+            } else {
+                // Check if user already has a username
+                const savedUsername = localStorage.getItem('secretdrop_username');
+                if (savedUsername) {
+                    currentUsername = savedUsername;
+                    usernameInput.value = savedUsername;
+                    showLink(savedUsername);
+                    showTab('inbox');
+                    startMessagePolling();
+                } else {
+                    showTab('create');
+                }
+            }
+            
+            setupEventListeners();
+        });
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    showTab(tab);
+                });
+            });
+            
+            // Create link
+            createBtn.addEventListener('click', createLink);
+            
+            // Copy link
+            copyBtn.addEventListener('click', copyLink);
+            
+            // Send message
+            sendBtn.addEventListener('click', sendMessage);
+            
+            // Clear messages
+            clearBtn.addEventListener('click', clearMessages);
+            
+            // Input validation
+            usernameInput.addEventListener('input', () => validateUsername(usernameInput.value));
+            messageInput.addEventListener('input', () => validateMessage(messageInput.value));
+        }
+        
+        // Tab navigation
+        function showTab(tabName) {
+            // Update active tab button
+            tabBtns.forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Show the correct tab content
+            createTab.classList.remove('active');
+            inboxTab.classList.remove('active');
+            sendTab.classList.remove('active');
+            
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        // Username validation
+        function validateUsername(username) {
+            const regex = /^[a-zA-Z0-9_-]{3,20}$/;
+            const isValid = regex.test(username);
+            
+            if (!isValid && username.length > 0) {
+                usernameError.classList.add('visible');
+                return false;
+            } else {
+                usernameError.classList.remove('visible');
+                return isValid;
+            }
+        }
+        
+        // Message validation
+        function validateMessage(message) {
+            const isValid = message.length > 0 && message.length <= 1000;
+            
+            if (!isValid && message.length > 0) {
+                messageError.classList.add('visible');
+                return false;
+            } else {
+                messageError.classList.remove('visible');
+                return isValid;
+            }
+        }
+        
+        // Recipient validation
+        function validateRecipient(recipient) {
+            const isValid = recipient.length > 0;
+            
+            if (!isValid) {
+                recipientError.classList.add('visible');
+                return false;
+            } else {
+                recipientError.classList.remove('visible');
+                return isValid;
+            }
+        }
+        
+        // Create personal link
+        function createLink() {
+            const username = usernameInput.value.trim();
+            
+            if (!validateUsername(username)) {
+                showNotification('Invalid username format', 'error');
+                return;
+            }
+            
+            currentUsername = username;
+            localStorage.setItem('secretdrop_username', username);
+            showLink(username);
+            showTab('inbox');
+            startMessagePolling();
+            showNotification('Secure link generated', 'success');
+        }
+        
+        // Show the generated link
+        function showLink(username) {
+            const link = `${window.location.origin}${window.location.pathname}#${username}`;
+            generatedLink.value = link;
+            linkContainer.style.display = 'block';
+        }
+        
+        // Copy link to clipboard
+        function copyLink() {
+            generatedLink.select();
+            document.execCommand('copy');
+            showNotification('Link copied to clipboard', 'success');
+        }
+        
+        // Send anonymous message
+        function sendMessage() {
+            const recipient = recipientInput.value.trim();
+            const message = messageInput.value.trim();
+            
+            if (!validateRecipient(recipient)) {
+                showNotification('Enter valid recipient', 'error');
+                return;
+            }
+            
+            if (!validateMessage(message)) {
+                showNotification('Invalid message length', 'error');
+                return;
+            }
+            
+            // Get recipient's messages from localStorage
+            const recipientKey = `secretdrop_messages_${recipient}`;
+            let messages = JSON.parse(localStorage.getItem(recipientKey)) || [];
+            
+            // Add new message
+            const newMessage = {
+                id: Date.now(),
+                text: message,
+                timestamp: new Date().toISOString()
+            };
+            
+            messages.unshift(newMessage); // Add to beginning (newest first)
+            localStorage.setItem(recipientKey, JSON.stringify(messages));
+            
+            // Clear the form
+            messageInput.value = '';
+            
+            // Show success message
+            showNotification('Transmission successful', 'success');
+            
+            // Request notification permission if not already granted
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
+        }
+        
+        // Start polling for new messages
+        function startMessagePolling() {
+            // Clear any existing interval
+            if (messagePollingInterval) {
+                clearInterval(messagePollingInterval);
+            }
+            
+            // Load messages immediately
+            loadMessages();
+            
+            // Then poll every second
+            messagePollingInterval = setInterval(loadMessages, 1000);
+        }
+        
+        // Load messages from localStorage
+        function loadMessages() {
+            if (!currentUsername) return;
+            
+            const messageKey = `secretdrop_messages_${currentUsername}`;
+            const messages = JSON.parse(localStorage.getItem(messageKey)) || [];
+            
+            if (messages.length > 0) {
+                inboxEmpty.style.display = 'none';
+                inboxHeader.style.display = 'block';
+                renderMessages(messages);
+            } else {
+                inboxEmpty.style.display = 'block';
+                inboxHeader.style.display = 'none';
+                inboxMessages.innerHTML = '';
+            }
+        }
+        
+        // Render messages to the inbox
+        function renderMessages(messages) {
+            // Check if there are new messages since last render
+            const currentMessageIds = Array.from(inboxMessages.children).map(el => el.dataset.id);
+            const newMessages = messages.filter(msg => !currentMessageIds.includes(msg.id.toString()));
+            
+            // If there are new messages, show desktop notification
+            if (newMessages.length > 0 && document.visibilityState === 'hidden') {
+                showDesktopNotification(newMessages.length);
+            }
+            
+            // Re-render all messages (for simplicity)
+            inboxMessages.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message';
+                messageEl.dataset.id = message.id;
+                
+                // Highlight new messages
+                if (newMessages.some(m => m.id === message.id)) {
+                    messageEl.classList.add('pulse');
+                }
+                
+                messageEl.innerHTML = `
+                    <div class="message-content">${escapeHtml(message.text)}</div>
+                    <div class="message-time">${formatTime(message.timestamp)}</div>
+                `;
+                
+                inboxMessages.appendChild(messageEl);
+            });
+        }
+        
+        // Clear all messages
+        function clearMessages() {
+            if (!confirm('Permanently delete all messages?')) {
+                return;
+            }
+            
+            const messageKey = `secretdrop_messages_${currentUsername}`;
+            localStorage.removeItem(messageKey);
+            loadMessages();
+            showNotification('All messages purged', 'success');
+        }
+        
+        // Show desktop notification
+        function showDesktopNotification(count) {
+            if (Notification.permission === 'granted') {
+                new Notification(`SecretDrop - ${count} New Transmission${count > 1 ? 's' : ''}`, {
+                    body: `You have ${count} new anonymous message${count > 1 ? 's' : ''}`,
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyLDIyQTEwLDEwIDAgMCwwIDIyLDEyQTEwLDEwIDAgMCwwIDEyLDJBMTAsMTAgMCAwLDAgMiwxMkExMCwxMCAwIDAsMCAxMiwyMk0xMiw0QTgsOCAwIDAsMSAyMCwxMkE4LDggMCAwLDEgMTIsMjBBOCw4IDAgMCwxIDQsMTJBOCw4IDAgMCwxIDEyLDRNNiwxN0gxOFYxNUg2VjE3TTksMTNIMTVWMTFIOVYxM000LDE2SDhWMTBINHY2WiIgZmlsbD0iIzAwZjBmZiIvPjwvc3ZnPg=='
+                });
+            }
+        }
+        
+        // Show notification toast
+        function showNotification(message, type) {
+            notification.className = `notification ${type}`;
+            notificationMessage.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Helper function to escape HTML
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        
+        // Helper function to format time
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString();
+        }
+    </script>
+</body>
+</html>
