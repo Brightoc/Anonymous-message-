@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGL Clone (Anonymous Messages)</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+  font-family: 'Arial', sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  background: #f5f5f5;
+}
+
+.screen {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+  display: none;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+#messages {
+  margin-top: 20px;
+  text-align: left;
+}
+
+#messages div {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+  </style>
+</head>
+<body>
+  <!-- Create Link Screen -->
+  <div id="create-link" class="screen">
+    <h1>Create Your Anonymous Link</h1>
+    <input type="text" id="username" placeholder="Your username" required />
+    <button id="generate-btn">Generate Link</button>
+  </div>
+
+  <!-- Send Message Screen (for visitors) -->
+  <div id="send-container" class="screen hidden">
+    <h2>Send an anonymous message to <span id="target-user"></span></h2>
+    <textarea id="message-text" placeholder="Your message..."></textarea>
+    <button id="send-btn">Send Anonymously</button>
+  </div>
+
+  <!-- Inbox Screen (for owner) -->
+  <div id="inbox-container" class="screen hidden">
+    <h2>Your Messages</h2>
+    <div id="messages"></div>
+    <button id="clear-btn">Clear All</button>
+  </div>
+
+  <script>
+    // DOM Elements
+const createLinkScreen = document.getElementById("create-link");
+const sendContainer = document.getElementById("send-container");
+const inboxContainer = document.getElementById("inbox-container");
+const usernameInput = document.getElementById("username");
+const generateBtn = document.getElementById("generate-btn");
+const sendBtn = document.getElementById("send-btn");
+const clearBtn = document.getElementById("clear-btn");
+const targetUserSpan = document.getElementById("target-user");
+const messageText = document.getElementById("message-text");
+const messagesDiv = document.getElementById("messages");
+
+// Check URL hash (e.g., `#username`)
+const hash = window.location.hash.substring(1);
+
+// Initialize UI based on URL
+if (hash) {
+  // If URL has a username (e.g., `#alice`)
+  showInboxOrSendScreen(hash);
+} else {
+  // Show link creation screen
+  createLinkScreen.classList.remove("hidden");
+}
+
+// Generate a personal link
+generateBtn.addEventListener("click", () => {
+  const username = usernameInput.value.trim();
+  if (!username) return alert("Please enter a username!");
+
+  const link = `${window.location.origin}${window.location.pathname}#${username}`;
+  alert(`Your NGL link:\n${link}\n\nShare this to receive anonymous messages!`);
+  showInboxOrSendScreen(username);
+});
+
+// Send an anonymous message
+sendBtn.addEventListener("click", () => {
+  const message = messageText.value.trim();
+  if (!message) return alert("Message cannot be empty!");
+
+  const targetUser = window.location.hash.substring(1);
+  saveMessage(targetUser, message);
+  messageText.value = "";
+  alert("Message sent anonymously! 🎉");
+});
+
+// Clear all messages
+clearBtn.addEventListener("click", () => {
+  const targetUser = window.location.hash.substring(1);
+  localStorage.removeItem(`ngl_${targetUser}`);
+  loadMessages(targetUser);
+});
+
+// Helper: Show inbox (for owner) or send screen (for visitors)
+function showInboxOrSendScreen(username) {
+  createLinkScreen.classList.add("hidden");
+
+  // If the visitor is the link owner, show inbox
+  if (prompt("Are you the owner of this link? Enter 'yes' to view messages") === "yes") {
+    inboxContainer.classList.remove("hidden");
+    loadMessages(username);
+  } else {
+    // Else, show send screen
+    sendContainer.classList.remove("hidden");
+    targetUserSpan.textContent = username;
+  }
+}
+
+// Save message to localStorage
+function saveMessage(username, text) {
+  const key = `ngl_${username}`;
+  const messages = JSON.parse(localStorage.getItem(key)) || [];
+  messages.push({
+    text,
+    timestamp: new Date().toISOString(),
+  });
+  localStorage.setItem(key, JSON.stringify(messages));
+}
+
+// Load messages for a user
+function loadMessages(username) {
+  const key = `ngl_${username}`;
+  const messages = JSON.parse(localStorage.getItem(key)) || [];
+
+  if (messages.length === 0) {
+    messagesDiv.innerHTML = "<p>No messages yet. Share your link!</p>";
+  } else {
+    messagesDiv.innerHTML = messages.map(msg => `
+      <div>
+        <strong>Anonymous:</strong> ${msg.text} 
+        <small>(${new Date(msg.timestamp).toLocaleString()})</small>
+      </div>
+    `).join("");
+  }
+}
+  </script>
+</body>
+</html>
