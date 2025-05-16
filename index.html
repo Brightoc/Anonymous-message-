@@ -111,6 +111,7 @@
       padding: 15px;
       border-radius: var(--radius);
       margin-bottom: 10px;
+      animation: fadeIn 0.3s ease;
     }
 
     .message-meta {
@@ -133,6 +134,11 @@
       text-align: center;
       padding: 40px 0;
       color: var(--text-light);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -228,6 +234,7 @@
       if (isOwner) {
         showScreen('inbox');
         loadMessages(hash);
+        startMessagePolling(hash); // Start checking for new messages
       } else {
         showScreen('send');
         targetUsername.textContent = hash;
@@ -260,6 +267,7 @@
       window.location.hash = username;
       showScreen('inbox');
       loadMessages(username);
+      startMessagePolling(username); // Start checking for new messages
     });
 
     // Send Message
@@ -312,7 +320,8 @@
         return;
       }
       
-      messages.forEach(msg => {
+      // Show newest messages first
+      messages.reverse().forEach(msg => {
         const messageEl = document.createElement('div');
         messageEl.className = 'message';
         messageEl.innerHTML = `
@@ -325,6 +334,31 @@
         messagesContainer.appendChild(messageEl);
       });
     }
+
+    // NEW: Periodically check for new messages
+    function startMessagePolling(username) {
+      let lastCount = JSON.parse(localStorage.getItem(`sd-messages-${username}`))?.length || 0;
+      
+      setInterval(() => {
+        const currentMessages = JSON.parse(localStorage.getItem(`sd-messages-${username}`)) || [];
+        if (currentMessages.length > lastCount) {
+          loadMessages(username);
+          lastCount = currentMessages.length;
+          
+          // Show notification for new message
+          if (document.hidden) {
+            new Notification("New SecretDrop Message", {
+              body: "You've received a new anonymous message!"
+            });
+          }
+        }
+      }, 2000); // Check every 2 seconds
+    }
+
+    // Request notification permission
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
   </script>
 </body>
-</html>
+            </html>
